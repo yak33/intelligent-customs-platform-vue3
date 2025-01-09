@@ -1,9 +1,6 @@
 import type { AlovaGenerics, AlovaOptions, AlovaRequestAdapter, Method, ResponseCompleteHandler } from 'alova';
 
-export type CustomAlovaConfig<AG extends AlovaGenerics> = Omit<
-  AlovaOptions<AG>,
-  'statesHook' | 'beforeRequest' | 'responded' | 'requestAdapter'
-> & {
+export type CustomAlovaConfig<AG extends AlovaGenerics> = Omit<AlovaOptions<AG>, 'statesHook' | 'beforeRequest' | 'responded' | 'requestAdapter'> & {
   /** request adapter. all request of alova will be sent by it. */
   requestAdapter?: AlovaRequestAdapter<AG['RequestConfig'], AG['Response'], AG['ResponseHeader']>;
 };

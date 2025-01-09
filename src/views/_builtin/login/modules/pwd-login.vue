@@ -5,23 +5,23 @@ import { loginModuleRecord } from '@/constants/app';
 import { useRouterPush } from '@/hooks/common/router';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { useAuthStore } from '@/store/modules/auth';
+import { sha256 } from '@/utils/crypto';
 
 defineOptions({
   name: 'PwdLogin'
 });
 
 const authStore = useAuthStore();
-const { toggleLoginModule } = useRouterPush();
 const { formRef, validate } = useNaiveForm();
-
+const { toggleLoginModule } = useRouterPush();
 interface FormModel {
   userName: string;
   password: string;
 }
 
 const model: FormModel = reactive({
-  userName: 'Soybean',
-  password: '123456'
+  userName: 'admin',
+  password: 'kt123456'
 });
 
 const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
@@ -33,11 +33,6 @@ const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
     password: formRules.pwd
   };
 });
-
-async function handleSubmit() {
-  await validate();
-  await authStore.login(model.userName, model.password);
-}
 
 type AccountKey = 'super' | 'admin' | 'user';
 
@@ -69,6 +64,11 @@ const accounts = computed<Account[]>(() => [
   }
 ]);
 
+async function handleSubmit() {
+  await validate();
+  await authStore.login(model.userName, sha256(model.password));
+}
+
 async function handleAccountLogin(account: Account) {
   await authStore.login(account.userName, account.password);
 }
@@ -77,11 +77,12 @@ async function handleAccountLogin(account: Account) {
 <template>
   <NForm ref="formRef" :model="model" :rules="rules" size="large" :show-label="false" @keyup.enter="handleSubmit">
     <NFormItem path="userName">
-      <NInput v-model:value="model.userName" :placeholder="$t('page.login.common.userNamePlaceholder')" />
+      <NInput v-model:value="model.userName" size="medium" :placeholder="$t('page.login.common.userNamePlaceholder')" />
     </NFormItem>
     <NFormItem path="password">
       <NInput
         v-model:value="model.password"
+        size="medium"
         type="password"
         show-password-on="click"
         :placeholder="$t('page.login.common.passwordPlaceholder')"

@@ -45,17 +45,9 @@ async function handleRepeatedModalError() {
     <NCard :title="$t('request.refreshToken')" :bordered="false" size="small" segmented class="card-wrapper">
       <NButton @click="refreshToken">{{ $t('common.trigger') }}</NButton>
     </NCard>
-    <NCard
-      :title="$t('page.function.request.repeatedErrorOccurOnce')"
-      :bordered="false"
-      size="small"
-      segmented
-      class="card-wrapper"
-    >
+    <NCard :title="$t('page.function.request.repeatedErrorOccurOnce')" :bordered="false" size="small" segmented class="card-wrapper">
       <NButton @click="handleRepeatedMessageError">{{ $t('page.function.request.repeatedError') }}(Message)</NButton>
-      <NButton class="ml-12px" @click="handleRepeatedModalError">
-        {{ $t('page.function.request.repeatedError') }}(Modal)
-      </NButton>
+      <NButton class="ml-12px" @click="handleRepeatedModalError">{{ $t('page.function.request.repeatedError') }}(Modal)</NButton>
     </NCard>
   </NSpace>
 </template>

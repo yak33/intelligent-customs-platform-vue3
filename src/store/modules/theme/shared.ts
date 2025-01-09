@@ -1,6 +1,6 @@
 import type { GlobalThemeOverrides } from 'naive-ui';
-import { defu } from 'defu';
 import { addColorAlpha, getColorPalette, getPaletteColorByNumber, getRgb } from '@sa/color';
+import defu from 'defu';
 import { overrideThemeSettings, themeSettings } from '@/theme/settings';
 import { themeVars } from '@/theme/vars';
 import { toggleHtmlClass } from '@/utils/common';
@@ -40,11 +40,7 @@ export function initThemeSettings() {
  * @param tokens Theme setting tokens
  * @param [recommended=false] Use recommended color. Default is `false`
  */
-export function createThemeToken(
-  colors: App.Theme.ThemeColor,
-  tokens?: App.Theme.ThemeSetting['tokens'],
-  recommended = false
-) {
+export function createThemeToken(colors: App.Theme.ThemeColor, tokens?: App.Theme.ThemeSetting['tokens'], recommended = false) {
   const paletteColors = createThemePaletteColors(colors, recommended);
 
   const { light, dark } = tokens || themeSettings.tokens;
@@ -191,9 +187,7 @@ export function toggleCssDarkMode(darkMode = false) {
  */
 export function toggleAuxiliaryColorModes(grayscaleMode = false, colourWeakness = false) {
   const htmlElement = document.documentElement;
-  htmlElement.style.filter = [grayscaleMode ? 'grayscale(100%)' : '', colourWeakness ? 'invert(80%)' : '']
-    .filter(Boolean)
-    .join(' ');
+  htmlElement.style.filter = [grayscaleMode ? 'grayscale(100%)' : '', colourWeakness ? 'invert(80%)' : ''].filter(Boolean).join(' ');
 }
 
 type NaiveColorScene = '' | 'Suppl' | 'Hover' | 'Pressed' | 'Active';
@@ -248,8 +242,20 @@ export function getNaiveTheme(colors: App.Theme.ThemeColor, recommended = false)
       ...getNaiveThemeColors(colors, recommended),
       borderRadius: '6px'
     },
+    Card: {
+      paddingSmall: '12px'
+    },
+    Button: {
+      paddingSmall: '0 8px'
+    },
     LoadingBar: {
       colorLoading
+    },
+    Dialog: {
+      padding: '12px',
+      closeMargin: '12px 12px 0 0',
+      actionSpace: '12px',
+      iconSize: '18px'
     },
     Tag: {
       borderRadius: '6px'

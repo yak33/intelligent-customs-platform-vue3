@@ -47,53 +47,8 @@ export const generatedRoutes: GeneratedRoute[] = [
       title: 'about',
       i18nKey: 'route.about',
       icon: 'fluent:book-information-24-regular',
-      order: 10
+      order: 999
     }
-  },
-  {
-    name: 'alova',
-    path: '/alova',
-    component: 'layout.base',
-    meta: {
-      title: 'alova',
-      i18nKey: 'route.alova',
-      icon: 'carbon:http',
-      order: 7
-    },
-    children: [
-      {
-        name: 'alova_request',
-        path: '/alova/request',
-        component: 'view.alova_request',
-        meta: {
-          title: 'alova_request',
-          i18nKey: 'route.alova_request',
-          order: 1
-        }
-      },
-      {
-        name: 'alova_scenes',
-        path: '/alova/scenes',
-        component: 'view.alova_scenes',
-        meta: {
-          title: 'alova_scenes',
-          i18nKey: 'route.alova_scenes',
-          icon: 'cbi:scene-dynamic',
-          order: 3
-        }
-      },
-      {
-        name: 'alova_user',
-        path: '/alova/user',
-        component: 'view.alova_user',
-        meta: {
-          title: 'alova_user',
-          i18nKey: 'route.alova_user',
-          icon: 'carbon:user-multiple',
-          order: 2
-        }
-      }
-    ]
   },
   {
     name: 'function',
@@ -262,6 +217,15 @@ export const generatedRoutes: GeneratedRoute[] = [
     },
     children: [
       {
+        name: 'manage_dict',
+        path: '/manage/dict',
+        component: 'view.manage_dict',
+        meta: {
+          title: 'manage_dict',
+          i18nKey: 'route.manage_dict'
+        }
+      },
+      {
         name: 'manage_menu',
         path: '/manage/menu',
         component: 'view.manage_menu',
@@ -272,6 +236,33 @@ export const generatedRoutes: GeneratedRoute[] = [
           order: 3,
           roles: ['R_ADMIN'],
           keepAlive: true
+        }
+      },
+      {
+        name: 'manage_notice',
+        path: '/manage/notice',
+        component: 'view.manage_notice',
+        meta: {
+          title: 'manage_notice',
+          i18nKey: 'route.manage_notice'
+        }
+      },
+      {
+        name: 'manage_org',
+        path: '/manage/org',
+        component: 'view.manage_org',
+        meta: {
+          title: 'manage_org',
+          i18nKey: 'route.manage_org'
+        }
+      },
+      {
+        name: 'manage_position',
+        path: '/manage/position',
+        component: 'view.manage_position',
+        meta: {
+          title: 'manage_position',
+          i18nKey: 'route.manage_position'
         }
       },
       {
@@ -309,6 +300,99 @@ export const generatedRoutes: GeneratedRoute[] = [
           hideInMenu: true,
           roles: ['R_ADMIN'],
           activeMenu: 'manage_user'
+        }
+      }
+    ]
+  },
+  {
+    name: 'monitor',
+    path: '/monitor',
+    component: 'layout.base',
+    meta: {
+      title: 'monitor',
+      i18nKey: 'route.monitor'
+    },
+    children: [
+      {
+        name: 'monitor_cache',
+        path: '/monitor/cache',
+        component: 'view.monitor_cache',
+        meta: {
+          title: 'monitor_cache',
+          i18nKey: 'route.monitor_cache'
+        }
+      },
+      {
+        name: 'monitor_file',
+        path: '/monitor/file',
+        component: 'view.monitor_file',
+        meta: {
+          title: 'monitor_file',
+          i18nKey: 'route.monitor_file'
+        }
+      },
+      {
+        name: 'monitor_logs',
+        path: '/monitor/logs',
+        meta: {
+          title: 'monitor_logs',
+          i18nKey: 'route.monitor_logs'
+        },
+        children: [
+          {
+            name: 'monitor_logs_error',
+            path: '/monitor/logs/error',
+            component: 'view.monitor_logs_error',
+            meta: {
+              title: 'monitor_logs_error',
+              i18nKey: 'route.monitor_logs_error'
+            }
+          },
+          {
+            name: 'monitor_logs_login',
+            path: '/monitor/logs/login',
+            component: 'view.monitor_logs_login',
+            meta: {
+              title: 'monitor_logs_login',
+              i18nKey: 'route.monitor_logs_login'
+            }
+          },
+          {
+            name: 'monitor_logs_operation',
+            path: '/monitor/logs/operation',
+            component: 'view.monitor_logs_operation',
+            meta: {
+              title: 'monitor_logs_operation',
+              i18nKey: 'route.monitor_logs_operation'
+            }
+          },
+          {
+            name: 'monitor_logs_scheduler',
+            path: '/monitor/logs/scheduler',
+            component: 'view.monitor_logs_scheduler',
+            meta: {
+              title: 'monitor_logs_scheduler',
+              i18nKey: 'route.monitor_logs_scheduler'
+            }
+          }
+        ]
+      },
+      {
+        name: 'monitor_scheduler',
+        path: '/monitor/scheduler',
+        component: 'view.monitor_scheduler',
+        meta: {
+          title: 'monitor_scheduler',
+          i18nKey: 'route.monitor_scheduler'
+        }
+      },
+      {
+        name: 'monitor_system',
+        path: '/monitor/system',
+        component: 'view.monitor_system',
+        meta: {
+          title: 'monitor_system',
+          i18nKey: 'route.monitor_system'
         }
       }
     ]
@@ -376,248 +460,21 @@ export const generatedRoutes: GeneratedRoute[] = [
     ]
   },
   {
-    name: 'plugin',
-    path: '/plugin',
+    name: 'tools',
+    path: '/tools',
     component: 'layout.base',
     meta: {
-      title: '插件示例',
-      i18nKey: 'route.plugin',
-      order: 7,
-      icon: 'clarity:plugin-line'
+      title: 'tools',
+      i18nKey: 'route.tools'
     },
     children: [
       {
-        name: 'plugin_barcode',
-        path: '/plugin/barcode',
-        component: 'view.plugin_barcode',
+        name: 'tools_generate-table',
+        path: '/tools/generate-table',
+        component: 'view.tools_generate-table',
         meta: {
-          title: 'plugin_barcode',
-          i18nKey: 'route.plugin_barcode',
-          icon: 'ic:round-barcode'
-        }
-      },
-      {
-        name: 'plugin_charts',
-        path: '/plugin/charts',
-        meta: {
-          title: 'plugin_charts',
-          i18nKey: 'route.plugin_charts',
-          icon: 'mdi:chart-areaspline'
-        },
-        children: [
-          {
-            name: 'plugin_charts_antv',
-            path: '/plugin/charts/antv',
-            component: 'view.plugin_charts_antv',
-            meta: {
-              title: 'plugin_charts_antv',
-              i18nKey: 'route.plugin_charts_antv',
-              icon: 'hugeicons:flow-square'
-            }
-          },
-          {
-            name: 'plugin_charts_echarts',
-            path: '/plugin/charts/echarts',
-            component: 'view.plugin_charts_echarts',
-            meta: {
-              title: 'plugin_charts_echarts',
-              i18nKey: 'route.plugin_charts_echarts',
-              icon: 'simple-icons:apacheecharts'
-            }
-          },
-          {
-            name: 'plugin_charts_vchart',
-            path: '/plugin/charts/vchart',
-            component: 'view.plugin_charts_vchart',
-            meta: {
-              title: 'plugin_charts_vchart',
-              i18nKey: 'route.plugin_charts_vchart',
-              localIcon: 'visactor'
-            }
-          }
-        ]
-      },
-      {
-        name: 'plugin_copy',
-        path: '/plugin/copy',
-        component: 'view.plugin_copy',
-        meta: {
-          title: 'plugin_copy',
-          i18nKey: 'route.plugin_copy',
-          icon: 'mdi:clipboard-outline'
-        }
-      },
-      {
-        name: 'plugin_editor',
-        path: '/plugin/editor',
-        meta: {
-          title: 'plugin_editor',
-          i18nKey: 'route.plugin_editor',
-          icon: 'icon-park-outline:editor'
-        },
-        children: [
-          {
-            name: 'plugin_editor_markdown',
-            path: '/plugin/editor/markdown',
-            component: 'view.plugin_editor_markdown',
-            meta: {
-              title: 'plugin_editor_markdown',
-              i18nKey: 'route.plugin_editor_markdown',
-              icon: 'ri:markdown-line'
-            }
-          },
-          {
-            name: 'plugin_editor_quill',
-            path: '/plugin/editor/quill',
-            component: 'view.plugin_editor_quill',
-            meta: {
-              title: 'plugin_editor_quill',
-              i18nKey: 'route.plugin_editor_quill',
-              icon: 'mdi:file-document-edit-outline'
-            }
-          }
-        ]
-      },
-      {
-        name: 'plugin_excel',
-        path: '/plugin/excel',
-        component: 'view.plugin_excel',
-        meta: {
-          title: 'plugin_excel',
-          i18nKey: 'route.plugin_excel',
-          icon: 'ri:file-excel-2-line',
-          keepAlive: true
-        }
-      },
-      {
-        name: 'plugin_gantt',
-        path: '/plugin/gantt',
-        meta: {
-          title: 'plugin_gantt',
-          i18nKey: 'route.plugin_gantt',
-          icon: 'ant-design:bar-chart-outlined'
-        },
-        children: [
-          {
-            name: 'plugin_gantt_dhtmlx',
-            path: '/plugin/gantt/dhtmlx',
-            component: 'view.plugin_gantt_dhtmlx',
-            meta: {
-              title: 'plugin_gantt_dhtmlx',
-              i18nKey: 'route.plugin_gantt_dhtmlx'
-            }
-          },
-          {
-            name: 'plugin_gantt_vtable',
-            path: '/plugin/gantt/vtable',
-            component: 'view.plugin_gantt_vtable',
-            meta: {
-              title: 'plugin_gantt_vtable',
-              i18nKey: 'route.plugin_gantt_vtable',
-              localIcon: 'visactor'
-            }
-          }
-        ]
-      },
-      {
-        name: 'plugin_icon',
-        path: '/plugin/icon',
-        component: 'view.plugin_icon',
-        meta: {
-          title: 'plugin_icon',
-          i18nKey: 'route.plugin_icon',
-          localIcon: 'custom-icon'
-        }
-      },
-      {
-        name: 'plugin_map',
-        path: '/plugin/map',
-        component: 'view.plugin_map',
-        meta: {
-          title: 'plugin_map',
-          i18nKey: 'route.plugin_map',
-          icon: 'mdi:map'
-        }
-      },
-      {
-        name: 'plugin_pdf',
-        path: '/plugin/pdf',
-        component: 'view.plugin_pdf',
-        meta: {
-          title: 'plugin_pdf',
-          i18nKey: 'route.plugin_pdf',
-          icon: 'uiw:file-pdf'
-        }
-      },
-      {
-        name: 'plugin_pinyin',
-        path: '/plugin/pinyin',
-        component: 'view.plugin_pinyin',
-        meta: {
-          title: 'plugin_pinyin',
-          i18nKey: 'route.plugin_pinyin',
-          icon: 'entypo-social:google-hangouts'
-        }
-      },
-      {
-        name: 'plugin_print',
-        path: '/plugin/print',
-        component: 'view.plugin_print',
-        meta: {
-          title: 'plugin_print',
-          i18nKey: 'route.plugin_print',
-          icon: 'mdi:printer'
-        }
-      },
-      {
-        name: 'plugin_swiper',
-        path: '/plugin/swiper',
-        component: 'view.plugin_swiper',
-        meta: {
-          title: 'plugin_swiper',
-          i18nKey: 'route.plugin_swiper',
-          icon: 'simple-icons:swiper'
-        }
-      },
-      {
-        name: 'plugin_tables',
-        path: '/plugin/tables',
-        meta: {
-          title: 'plugin_tables',
-          i18nKey: 'route.plugin_tables',
-          icon: 'icon-park-outline:table'
-        },
-        children: [
-          {
-            name: 'plugin_tables_vtable',
-            path: '/plugin/tables/vtable',
-            component: 'view.plugin_tables_vtable',
-            meta: {
-              title: 'plugin_tables_vtable',
-              i18nKey: 'route.plugin_tables_vtable',
-              localIcon: 'visactor'
-            }
-          }
-        ]
-      },
-      {
-        name: 'plugin_typeit',
-        path: '/plugin/typeit',
-        component: 'view.plugin_typeit',
-        meta: {
-          title: 'plugin_typeit',
-          i18nKey: 'route.plugin_typeit',
-          icon: 'mdi:typewriter'
-        }
-      },
-      {
-        name: 'plugin_video',
-        path: '/plugin/video',
-        component: 'view.plugin_video',
-        meta: {
-          title: 'plugin_video',
-          i18nKey: 'route.plugin_video',
-          icon: 'mdi:video'
+          title: 'tools_generate-table',
+          i18nKey: 'route.tools_generate-table'
         }
       }
     ]
@@ -629,7 +486,8 @@ export const generatedRoutes: GeneratedRoute[] = [
     meta: {
       title: 'user-center',
       i18nKey: 'route.user-center',
-      hideInMenu: true
+      hideInMenu: true,
+      constant: true
     }
   }
 ];

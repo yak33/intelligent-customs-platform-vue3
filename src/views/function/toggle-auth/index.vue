@@ -64,7 +64,7 @@ async function handleToggleAccount(account: Account) {
       <NDescriptions bordered :column="1">
         <NDescriptionsItem :label="$t('page.manage.user.userRole')">
           <NSpace>
-            <NTag v-for="role in authStore.userInfo.roles" :key="role">{{ role }}</NTag>
+            <NTag v-for="role in authStore.userInfo.roleIds" :key="role">{{ role }}</NTag>
           </NSpace>
         </NDescriptionsItem>
         <NDescriptionsItem ions-item :label="$t('page.function.toggleAuth.toggleAccount')">
@@ -82,13 +82,7 @@ async function handleToggleAccount(account: Account) {
         </NDescriptionsItem>
       </NDescriptions>
     </NCard>
-    <NCard
-      :title="$t('page.function.toggleAuth.authHook')"
-      :bordered="false"
-      size="small"
-      segmented
-      class="card-wrapper"
-    >
+    <NCard :title="$t('page.function.toggleAuth.authHook')" :bordered="false" size="small" segmented class="card-wrapper">
       <NSpace>
         <NButton v-if="hasAuth('B_CODE1')">{{ $t('page.function.toggleAuth.superAdminVisible') }}</NButton>
         <NButton v-if="hasAuth('B_CODE2')">{{ $t('page.function.toggleAuth.adminVisible') }}</NButton>

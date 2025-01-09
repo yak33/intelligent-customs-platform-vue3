@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, reactive, watch } from 'vue';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
-import { fetchGetAllRoles } from '@/service/api';
+import { fetchAddUser, fetchGetEditUserInfo, fetchUpdateUserInfo } from '@/service/api';
 import { $t } from '@/locales';
-import { enableStatusOptions, userGenderOptions } from '@/constants/business';
+import { useDict } from '@/hooks/business/dict';
 
 defineOptions({
   name: 'UserOperateDrawer'
@@ -24,12 +24,14 @@ interface Emits {
 
 const emit = defineEmits<Emits>();
 
+const { dictOptions } = useDict();
+
 const visible = defineModel<boolean>('visible', {
   default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
-const { defaultRequiredRule } = useFormRules();
+const { defaultRequiredRule, formRules } = useFormRules();
 
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
@@ -39,61 +41,43 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Pick<
-  Api.SystemManage.User,
-  'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'userRoles' | 'status'
->;
+type Model = Api.SystemManage.UserEdit;
 
-const model = ref(createDefaultModel());
+const model: Model = reactive(createDefaultModel());
 
 function createDefaultModel(): Model {
   return {
+    id: '',
     userName: '',
-    userGender: null,
+    gender: '0',
     nickName: '',
-    userPhone: '',
-    userEmail: '',
-    userRoles: [],
-    status: null
+    realName: '',
+    phone: '',
+    email: '',
+    status: '1'
   };
 }
 
-type RuleKey = Extract<keyof Model, 'userName' | 'status'>;
+type RuleKey = Extract<keyof Model, 'userName' | 'status' | 'realName' | 'phone' | 'email'>;
 
-const rules: Record<RuleKey, App.Global.FormRule> = {
-  userName: defaultRequiredRule,
-  status: defaultRequiredRule
+const rules: Record<RuleKey, App.Global.FormRule[]> = {
+  userName: formRules.userName,
+  status: [defaultRequiredRule],
+  realName: [defaultRequiredRule],
+  phone: formRules.phone,
+  email: formRules.email
 };
 
-/** the enabled role options */
-const roleOptions = ref<CommonType.Option<string>[]>([]);
+const isAdd = computed(() => props.operateType === 'add');
 
-async function getRoleOptions() {
-  const { error, data } = await fetchGetAllRoles();
-
-  if (!error) {
-    const options = data.map(item => ({
-      label: item.roleName,
-      value: item.roleCode
-    }));
-
-    // the mock data does not have the roleCode, so fill it
-    // if the real request, remove the following code
-    const userRoleOptions = model.value.userRoles.map(item => ({
-      label: item,
-      value: item
-    }));
-    // end
-
-    roleOptions.value = [...userRoleOptions, ...options];
-  }
-}
-
-function handleInitModel() {
-  model.value = createDefaultModel();
+async function handleInitModel() {
+  Object.assign(model, createDefaultModel());
 
   if (props.operateType === 'edit' && props.rowData) {
-    Object.assign(model.value, props.rowData);
+    const { error, data } = await fetchGetEditUserInfo(props.rowData?.id);
+    if (!error) {
+      Object.assign(model, data);
+    }
   }
 }
 
@@ -104,16 +88,19 @@ function closeDrawer() {
 async function handleSubmit() {
   await validate();
   // request
-  window.$message?.success($t('common.updateSuccess'));
-  closeDrawer();
-  emit('submitted');
+  const func = isAdd.value ? fetchAddUser : fetchUpdateUserInfo;
+  const { error, data } = await func(model);
+  if (!error && data) {
+    window.$message?.success(isAdd.value ? $t('common.addSuccess') : $t('common.updateSuccess'));
+    closeDrawer();
+    emit('submitted');
+  }
 }
 
 watch(visible, () => {
   if (visible.value) {
     handleInitModel();
     restoreValidation();
-    getRoleOptions();
   }
 });
 </script>
@@ -123,39 +110,34 @@ watch(visible, () => {
     <NDrawerContent :title="title" :native-scrollbar="false" closable>
       <NForm ref="formRef" :model="model" :rules="rules">
         <NFormItem :label="$t('page.manage.user.userName')" path="userName">
-          <NInput v-model:value="model.userName" :placeholder="$t('page.manage.user.form.userName')" />
+          <NInput v-model:value="model.userName" :placeholder="$t('page.manage.user.form.userName')" :disabled="!isAdd" />
         </NFormItem>
-        <NFormItem :label="$t('page.manage.user.userGender')" path="userGender">
-          <NRadioGroup v-model:value="model.userGender">
-            <NRadio v-for="item in userGenderOptions" :key="item.value" :value="item.value" :label="$t(item.label)" />
+        <NFormItem :label="$t('page.manage.user.gender')" path="gender">
+          <NRadioGroup v-model:value="model.gender">
+            <NRadio v-for="item in dictOptions('gender')" :key="item.value" :value="item.value" :label="item.label" />
           </NRadioGroup>
         </NFormItem>
         <NFormItem :label="$t('page.manage.user.nickName')" path="nickName">
           <NInput v-model:value="model.nickName" :placeholder="$t('page.manage.user.form.nickName')" />
         </NFormItem>
-        <NFormItem :label="$t('page.manage.user.userPhone')" path="userPhone">
-          <NInput v-model:value="model.userPhone" :placeholder="$t('page.manage.user.form.userPhone')" />
+        <NFormItem :label="$t('page.manage.user.realName')" path="realName">
+          <NInput v-model:value="model.realName" :placeholder="$t('page.manage.user.form.realName')" />
         </NFormItem>
-        <NFormItem :label="$t('page.manage.user.userEmail')" path="email">
-          <NInput v-model:value="model.userEmail" :placeholder="$t('page.manage.user.form.userEmail')" />
+        <NFormItem :label="$t('page.manage.user.phone')" path="phone">
+          <NInput v-model:value="model.phone" :placeholder="$t('page.manage.user.form.phone')" />
         </NFormItem>
-        <NFormItem :label="$t('page.manage.user.userStatus')" path="status">
+        <NFormItem :label="$t('page.manage.user.email')" path="email">
+          <NInput v-model:value="model.email" :placeholder="$t('page.manage.user.form.email')" />
+        </NFormItem>
+        <NFormItem :label="$t('page.manage.user.status')" path="status">
           <NRadioGroup v-model:value="model.status">
-            <NRadio v-for="item in enableStatusOptions" :key="item.value" :value="item.value" :label="$t(item.label)" />
+            <NRadio v-for="item in dictOptions('status')" :key="item.value" :value="item.value" :label="item.label" />
           </NRadioGroup>
-        </NFormItem>
-        <NFormItem :label="$t('page.manage.user.userRole')" path="roles">
-          <NSelect
-            v-model:value="model.userRoles"
-            multiple
-            :options="roleOptions"
-            :placeholder="$t('page.manage.user.form.userRole')"
-          />
         </NFormItem>
       </NForm>
       <template #footer>
         <NSpace :size="16">
-          <NButton @click="closeDrawer">{{ $t('common.cancel') }}</NButton>
+          <NButton quaternary @click="closeDrawer">{{ $t('common.cancel') }}</NButton>
           <NButton type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</NButton>
         </NSpace>
       </template>

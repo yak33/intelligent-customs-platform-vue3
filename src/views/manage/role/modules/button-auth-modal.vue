@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, shallowRef } from 'vue';
+import { computed, reactive, shallowRef, watch } from 'vue';
 import { $t } from '@/locales';
+import { fetchAddRolePermission, fetchGetMenuPermission, fetchGetRolePermissionIds } from '@/service/api';
 
 defineOptions({
   name: 'ButtonAuthModal'
@@ -8,7 +9,7 @@ defineOptions({
 
 interface Props {
   /** the roleId */
-  roleId: number;
+  roleId: string;
 }
 
 const props = defineProps<Props>();
@@ -17,80 +18,80 @@ const visible = defineModel<boolean>('visible', {
   default: false
 });
 
+const title = computed(() => $t('common.edit') + $t('page.manage.role.buttonAuth'));
+
+/** tree checks */
+const checks = shallowRef<string[]>([]);
+
+/** menu auth model */
+const model: Api.SystemManage.RolePermission = reactive(createDefaultModel());
+
+function createDefaultModel(): Api.SystemManage.RolePermission {
+  return {
+    roleId: props.roleId,
+    permissionIds: []
+  };
+}
+
+/** menu permission data */
+const permissionData = shallowRef<Api.SystemManage.MenuPermission[]>([]);
+
+async function getPermissionData() {
+  const { error, data } = await fetchGetMenuPermission();
+  if (!error) {
+    permissionData.value = data;
+  }
+}
+
+/** init get permissionIds for roleId, belong checks */
+async function getPermissionIds() {
+  const { error, data } = await fetchGetRolePermissionIds(props.roleId);
+  if (!error) {
+    checks.value = data;
+    getPermissionData();
+  }
+}
+
 function closeModal() {
   visible.value = false;
 }
 
-const title = computed(() => $t('common.edit') + $t('page.manage.role.buttonAuth'));
-
-type ButtonConfig = {
-  id: number;
-  label: string;
-  code: string;
-};
-
-const tree = shallowRef<ButtonConfig[]>([]);
-
-async function getAllButtons() {
-  // request
-  tree.value = [
-    { id: 1, label: 'button1', code: 'code1' },
-    { id: 2, label: 'button2', code: 'code2' },
-    { id: 3, label: 'button3', code: 'code3' },
-    { id: 4, label: 'button4', code: 'code4' },
-    { id: 5, label: 'button5', code: 'code5' },
-    { id: 6, label: 'button6', code: 'code6' },
-    { id: 7, label: 'button7', code: 'code7' },
-    { id: 8, label: 'button8', code: 'code8' },
-    { id: 9, label: 'button9', code: 'code9' },
-    { id: 10, label: 'button10', code: 'code10' }
-  ];
+async function handleSubmit() {
+  model.permissionIds = checks.value;
+  const { error, data } = await fetchAddRolePermission(model);
+  if (!error && data) {
+    window.$message?.success?.($t('common.modifySuccess'));
+    closeModal();
+  }
 }
 
-const checks = shallowRef<number[]>([]);
-
-async function getChecks() {
-  console.log(props.roleId);
-  // request
-  checks.value = [1, 2, 3, 4, 5];
-}
-
-function handleSubmit() {
-  console.log(checks.value, props.roleId);
-  // request
-
-  window.$message?.success?.($t('common.modifySuccess'));
-
-  closeModal();
-}
-
-function init() {
-  getAllButtons();
-  getChecks();
-}
-
-// init
-init();
+watch(visible, () => {
+  if (visible.value) {
+    Object.assign(model, createDefaultModel());
+    getPermissionIds();
+  }
+});
 </script>
 
 <template>
-  <NModal v-model:show="visible" :title="title" preset="card" class="w-480px">
-    <NTree
-      v-model:checked-keys="checks"
-      :data="tree"
-      key-field="id"
-      block-line
-      checkable
-      expand-on-click
-      virtual-scroll
-      class="h-280px"
-    />
+  <NModal v-model:show="visible" :title="title" preset="card" :segmented="false" class="w-1080px">
+    <NCheckboxGroup v-model:value="checks" class="h-500px overflow-auto" size="small">
+      <NDescriptions label-placement="left" bordered :column="1">
+        <NDescriptionsItem v-for="item in permissionData" :key="item.menuId" :label="$t(item.i18nKey)">
+          <NGrid :y-gap="8" :cols="4">
+            <NGridItem v-for="button in item.buttons" :key="button.id">
+              <NCheckbox :value="button.id" :label="button.name" />
+            </NGridItem>
+          </NGrid>
+        </NDescriptionsItem>
+      </NDescriptions>
+    </NCheckboxGroup>
     <template #footer>
       <NSpace justify="end">
-        <NButton size="small" class="mt-16px" @click="closeModal">
+        <NButton size="small" quaternary @click="closeModal">
           {{ $t('common.cancel') }}
         </NButton>
-        <NButton type="primary" size="small" class="mt-16px" @click="handleSubmit">
+        <NButton type="primary" size="small" @click="handleSubmit">
           {{ $t('common.confirm') }}
         </NButton>
       </NSpace>

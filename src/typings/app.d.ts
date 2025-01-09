@@ -291,10 +291,12 @@ declare namespace App {
       };
       common: {
         action: string;
+        actionSuccess: string;
         add: string;
         addSuccess: string;
         backToHome: string;
         batchDelete: string;
+        confirmBatchDelete: string;
         cancel: string;
         close: string;
         check: string;
@@ -326,11 +328,21 @@ declare namespace App {
         trigger: string;
         update: string;
         updateSuccess: string;
+        save: string;
+        saveSuccess: string;
         userCenter: string;
+        openUp: string;
+        putAway: string;
         yesOrNo: {
           yes: string;
           no: string;
         };
+        moreOperation: string;
+        createUser: string;
+        createTime: string;
+        updateUser: string;
+        updateTime: string;
+        isNotDevEnvTip: string;
       };
       request: {
         logout: string;
@@ -460,7 +472,6 @@ declare namespace App {
           devDep: string;
         };
         home: {
-          branchDesc: string;
           greeting: string;
           weatherDesc: string;
           projectCount: string;
@@ -526,18 +537,82 @@ declare namespace App {
             repeatedErrorMsg2: string;
           };
         };
-        alova: {
-          scenes: {
-            captchaSend: string;
-            autoRequest: string;
-            visibilityRequestTips: string;
-            pollingRequestTips: string;
-            networkRequestTips: string;
-            refreshTime: string;
-            startRequest: string;
-            stopRequest: string;
-            requestCrossComponent: string;
-            triggerAllRequest: string;
+        tools: {
+          common: {
+            renderType: {
+              input: string;
+              select: string;
+              radio: string;
+            };
+            searchType: {
+              equal: string;
+              noEqual: string;
+              like: string;
+              leftLike: string;
+              rightLike: string;
+              greaterThan: string;
+              greaterThanOrEqual: string;
+              lessThan: string;
+              lessThanOrEqual: string;
+              in: string;
+              notIn: string;
+              between: string;
+              notBetween: string;
+            };
+          };
+          generateTable: {
+            tableName: string;
+            tableComment: string;
+            tablePrefix: string;
+            parentPackage: string;
+            moduleName: string;
+            parentMenuName: string;
+            author: string;
+            status: string;
+            form: {
+              tableName: string;
+              tableNameSelect: string;
+              tableComment: string;
+              tablePrefix: string;
+              parentPackage: string;
+              moduleName: string;
+              parentMenuName: string;
+              author: string;
+            };
+            addGenerate: string;
+            editGenerate: string;
+            isNotDevEnvTip: string;
+          };
+          generateTableColumn: {
+            ordinalPosition: string;
+            columnName: string;
+            propertyName: string;
+            columnComment: string;
+            dataType: string;
+            javaType: string;
+            typescriptType: string;
+            list: string;
+            search: string;
+            searchType: string;
+            required: string;
+            added: string;
+            edit: string;
+            renderType: string;
+            dictCode: string;
+            status: string;
+            cleanColumns: string;
+            cleanColumnsConfirm: string;
+            cleanSuccess: string;
+            syncColumns: string;
+            syncColumnsConfirm: string;
+            syncSuccess: string;
+            baseInfo: string;
+            columnInfo: string;
+            resultInfo: string;
+            generateSuccess: string;
+            downloadZip: string;
+            previous: string;
+            next: string;
           };
         };
         manage: {
@@ -551,13 +626,15 @@ declare namespace App {
             title: string;
             roleName: string;
             roleCode: string;
-            roleStatus: string;
-            roleDesc: string;
+            status: string;
+            sort: string;
+            description: string;
             form: {
               roleName: string;
               roleCode: string;
-              roleStatus: string;
-              roleDesc: string;
+              status: string;
+              sort: string;
+              description: string;
             };
             addRole: string;
             editRole: string;
@@ -567,35 +644,47 @@ declare namespace App {
           user: {
             title: string;
             userName: string;
-            userGender: string;
+            gender: string;
             nickName: string;
-            userPhone: string;
-            userEmail: string;
-            userStatus: string;
+            realName: string;
+            phone: string;
+            email: string;
+            status: string;
             userRole: string;
+            userPosition: string;
+            userOrgUnits: string;
             form: {
               userName: string;
-              userGender: string;
+              gender: string;
               nickName: string;
-              userPhone: string;
-              userEmail: string;
-              userStatus: string;
+              realName: string;
+              phone: string;
+              email: string;
+              status: string;
               userRole: string;
+              userPosition: string;
+              userOrgUnits: string;
             };
             addUser: string;
             editUser: string;
-            gender: {
+            resetPwd: string;
+            confirmResetPwd: string;
+            responsibilities: string;
+            manageOrganization: string;
+            userGender: {
+              confidential: string;
               male: string;
               female: string;
             };
+            selectTreeIsEmptyTip: string;
           };
           menu: {
             home: string;
             title: string;
             id: string;
             parentId: string;
-            menuType: string;
-            menuName: string;
+            type: string;
+            name: string;
             routeName: string;
             routePath: string;
             pathParam: string;
@@ -605,23 +694,21 @@ declare namespace App {
             icon: string;
             localIcon: string;
             iconTypeTitle: string;
-            order: string;
-            constant: string;
+            sort: string;
             keepAlive: string;
             href: string;
+            iframeUrl: string;
             hideInMenu: string;
             activeMenu: string;
             multiTab: string;
             fixedIndexInTab: string;
             query: string;
-            button: string;
-            buttonCode: string;
-            buttonDesc: string;
-            menuStatus: string;
+            status: string;
+            detail: string;
             form: {
               home: string;
-              menuType: string;
-              menuName: string;
+              type: string;
+              name: string;
               routeName: string;
               routePath: string;
               pathParam: string;
@@ -630,25 +717,24 @@ declare namespace App {
               i18nKey: string;
               icon: string;
               localIcon: string;
-              order: string;
+              sort: string;
               keepAlive: string;
               href: string;
+              iframeUrl: string;
               hideInMenu: string;
               activeMenu: string;
               multiTab: string;
               fixedInTab: string;
               fixedIndexInTab: string;
+              query: string;
               queryKey: string;
               queryValue: string;
-              button: string;
-              buttonCode: string;
-              buttonDesc: string;
-              menuStatus: string;
+              status: string;
             };
             addMenu: string;
             editMenu: string;
             addChildMenu: string;
-            type: {
+            menuType: {
               directory: string;
               menu: string;
             };
@@ -656,6 +742,367 @@ declare namespace App {
               iconify: string;
               local: string;
             };
+            selectTreeIsEmptyTip: string;
+            menuTypeIsDirectory: string;
+          };
+          permission: {
+            title: string;
+            menuName: string;
+            name: string;
+            resource: string;
+            status: string;
+            sort: string;
+            description: string;
+            addButton: string;
+            editButton: string;
+            form: {
+              menuName: string;
+              name: string;
+              resource: string;
+              resourceIntroduction: string;
+              status: string;
+              sort: string;
+              description: string;
+            };
+          };
+          position: {
+            name: string;
+            i18nKey: string;
+            code: string;
+            abbr: string;
+            description: string;
+            sort: string;
+            status: string;
+            form: {
+              name: string;
+              i18nKey: string;
+              code: string;
+              abbr: string;
+              description: string;
+              sort: string;
+              status: string;
+            };
+            addPosition: string;
+            editPosition: string;
+          };
+          dict: {
+            title: string;
+            name: string;
+            code: string;
+            type: string;
+            sort: string;
+            description: string;
+            status: string;
+            form: {
+              name: string;
+              code: string;
+              type: string;
+              sort: string;
+              description: string;
+              status: string;
+            };
+            addDict: string;
+            editDict: string;
+            dictType: {
+              system: string;
+              business: string;
+            };
+            loadCacheSuccess: string;
+            selectTreeIsEmptyTip: string;
+            systemFieldsCannotBeDeleted: string;
+          };
+          dictItem: {
+            title: string;
+            dictCode: string;
+            value: string;
+            zhCN: string;
+            enUS: string;
+            sort: string;
+            type: string;
+            color: string;
+            description: string;
+            status: string;
+            form: {
+              value: string;
+              zhCN: string;
+              enUS: string;
+              sort: string;
+              type: string;
+              color: string;
+              description: string;
+              status: string;
+            };
+            addDictItem: string;
+            editDictItem: string;
+          };
+          orgUnits: {
+            title: string;
+            name: string;
+            code: string;
+            abbr: string;
+            description: string;
+            sort: string;
+            status: string;
+            form: {
+              name: string;
+              code: string;
+              abbr: string;
+              description: string;
+              sort: string;
+              status: string;
+            };
+            addOrgUnits: string;
+            editOrgUnits: string;
+            addChildOrgUnits: string;
+            unassigned: string;
+          };
+          notice: {
+            category: string;
+            title: string;
+            content: string;
+            releaseTime: string;
+            remark: string;
+            status: string;
+            form: {
+              category: string;
+              title: string;
+              content: string;
+              releaseTime: string;
+              remark: string;
+              status: string;
+            };
+          };
+        };
+        monitor: {
+          percentage: string;
+          system: {
+            status: string;
+            cpuUserUsage: string;
+            cpuSystemUsage: string;
+            systemMemoryUsage: string;
+            jvmMemoryUsage: string;
+            operatingSystem: {
+              title: string;
+              name: string;
+              manufacturer: string;
+              arch: string;
+              systemBootTime: string;
+              systemUptime: string;
+            };
+            centralProcessor: {
+              title: string;
+              name: string;
+              physicalProcessorCount: string;
+              logicalProcessorCount: string;
+              processorIdentifier: string;
+              vendorFreq: string;
+              userPercent: string;
+              systemPercent: string;
+              idlePercent: string;
+            };
+            globalMemory: {
+              title: string;
+              total: string;
+              used: string;
+              available: string;
+              swapTotal: string;
+              swapUsed: string;
+              swapFree: string;
+              memoryUsedRate: string;
+              swapUsedRate: string;
+            };
+            jvm: {
+              title: string;
+              vmName: string;
+              uptime: string;
+              vmVersion: string;
+              vmVendor: string;
+              startTime: string;
+              inputArguments: string;
+              heapMemoryUsed: string;
+              heapMemoryMax: string;
+              memoryUsageRate: string;
+              nonHeapMemoryUsed: string;
+            };
+            fileStore: {
+              title: string;
+              name: string;
+              type: string;
+              mount: string;
+              totalSpace: string;
+              usableSpace: string;
+              usedSpace: string;
+              usedPercentage: string;
+            };
+            process: {
+              title: string;
+              processID: string;
+              name: string;
+              cpuLoad: string;
+            };
+          };
+          cache: {
+            redis: {
+              title: string;
+              version: string;
+              uptime: string;
+              connectedClients: string;
+              usedMemory: string;
+              maxMemory: string;
+              memoryUsageRate: string;
+              memFragmentationRatio: string;
+              totalCommandsProcessed: string;
+              echartsTitle: string;
+              echartsSubTitle: string;
+            };
+          };
+          logs: {
+            login: {
+              userName: string;
+              userRealName: string;
+              ip: string;
+              ipAddr: string;
+              userAgent: string;
+              status: string;
+              message: string;
+              createTime: string;
+              createUser: string;
+              form: {
+                userName: string;
+                userRealName: string;
+              };
+              loginStatus: {
+                fail: string;
+                success: string;
+              };
+            };
+            operation: {
+              requestId: string;
+              ip: string;
+              ipAddr: string;
+              userAgent: string;
+              requestUri: string;
+              requestMethod: string;
+              contentType: string;
+              operation: string;
+              methodName: string;
+              methodParams: string;
+              useTime: string;
+              createUser: string;
+              createTime: string;
+              form: {
+                createUser: string;
+              };
+            };
+            error: {
+              requestId: string;
+              ip: string;
+              ipAddr: string;
+              userAgent: string;
+              requestUri: string;
+              requestMethod: string;
+              contentType: string;
+              operation: string;
+              methodName: string;
+              methodParams: string;
+              useTime: string;
+              createUser: string;
+              createTime: string;
+              exceptionMessage: string;
+              exceptionClass: string;
+              line: string;
+              stackTrace: string;
+              form: {
+                createUser: string;
+              };
+            };
+            scheduler: {
+              jobName: string;
+              jobGroup: string;
+              useTime: string;
+              status: string;
+              createTime: string;
+              exceptionMessage: string;
+              exceptionClass: string;
+              line: string;
+              stackTrace: string;
+              executeStatus: {
+                success: string;
+                fail: string;
+              };
+              form: {
+                jobName: string;
+              };
+            };
+          };
+          scheduler: {
+            jobName: string;
+            jobGroup: string;
+            jobClassName: string;
+            description: string;
+            cronExpression: string;
+            jobData: string;
+            triggerName: string;
+            triggerGroup: string;
+            triggerDescription: string;
+            triggerData: string;
+            triggerState: string;
+            form: {
+              jobName: string;
+              jobGroup: string;
+              jobClassName: string;
+              description: string;
+              cronExpression: string;
+              jobDataKey: string;
+              jobDataValue: string;
+              triggerName: string;
+              triggerGroup: string;
+              triggerDescription: string;
+              triggerDataKey: string;
+              triggerDataValue: string;
+            };
+            addJob: string;
+            editJob: string;
+            immediateJob: string;
+            immediateSuccess: string;
+            pauseJob: string;
+            pauseJobGroup: string;
+            pauseSuccess: string;
+            pauseFail: string;
+            resumeJob: string;
+            resumeJobGroup: string;
+            resumeSuccess: string;
+            resumeFail: string;
+            confirmOperate: string;
+            triggerStates: {
+              waiting: string;
+              acquired: string;
+              executing: string;
+              paused: string;
+              blocked: string;
+              error: string;
+            };
+          };
+          file: {
+            orderNo: string;
+            category: string;
+            location: string;
+            name: string;
+            suffix: string;
+            path: string;
+            size: string;
+            uuid: string;
+            contentType: string;
+            remark: string;
+            form: {
+              orderNo: string;
+              category: string;
+              location: string;
+              name: string;
+            };
+            upload: string;
+            uploadSuccess: string;
+            preview: string;
           };
         };
       };
@@ -738,9 +1185,9 @@ declare namespace App {
     /** The backend service response data */
     type Response<T = unknown> = {
       /** The backend service response code */
-      code: string;
+      code: number;
       /** The backend service response message */
-      msg: string;
+      message: string;
       /** The backend service response data */
       data: T;
     };

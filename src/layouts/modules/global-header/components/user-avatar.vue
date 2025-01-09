@@ -5,6 +5,7 @@ import { useAuthStore } from '@/store/modules/auth';
 import { useRouterPush } from '@/hooks/common/router';
 import { useSvgIcon } from '@/hooks/common/icon';
 import { $t } from '@/locales';
+import { fetchLogout } from '@/service/api';
 
 defineOptions({
   name: 'UserAvatar'
@@ -59,7 +60,11 @@ function logout() {
     positiveText: $t('common.confirm'),
     negativeText: $t('common.cancel'),
     onPositiveClick: () => {
-      authStore.resetStore();
+      fetchLogout().then(res => {
+        if (!res.error && res.data) {
+          authStore.resetStore();
+        }
+      });
     }
   });
 }
@@ -68,7 +73,6 @@ function handleDropdown(key: DropdownKey) {
   if (key === 'logout') {
     logout();
   } else {
-    // If your other options are jumps from other routes, they will be directly supported here
     routerPushByKey(key);
   }
 }

@@ -20,9 +20,7 @@ export function setupUnplugin(viteEnv: Env.ImportMeta) {
     Icons({
       compiler: 'vue3',
       customCollections: {
-        [collectionName]: FileSystemIconLoader(localIconPath, svg =>
-          svg.replace(/^<svg\s/, '<svg width="1em" height="1em" ')
-        )
+        [collectionName]: FileSystemIconLoader(localIconPath, svg => svg.replace(/^<svg\s/, '<svg width="1em" height="1em" '))
       },
       scale: 1,
       defaultClass: 'inline-block'
@@ -30,10 +28,7 @@ export function setupUnplugin(viteEnv: Env.ImportMeta) {
     Components({
       dts: 'src/typings/components.d.ts',
       types: [{ from: 'vue-router', names: ['RouterLink', 'RouterView'] }],
-      resolvers: [
-        NaiveUiResolver(),
-        IconsResolver({ customCollections: [collectionName], componentPrefix: VITE_ICON_PREFIX })
-      ]
+      resolvers: [NaiveUiResolver(), IconsResolver({ customCollections: [collectionName], componentPrefix: VITE_ICON_PREFIX })]
     }),
     createSvgIconsPlugin({
       iconDirs: [localIconPath],

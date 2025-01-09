@@ -20,13 +20,7 @@ function resetTabLabel() {
 
 <template>
   <NSpace vertical :size="16">
-    <NCard
-      :title="$t('page.function.tab.tabOperate.title')"
-      :bordered="false"
-      size="small"
-      segmented
-      class="card-wrapper"
-    >
+    <NCard :title="$t('page.function.tab.tabOperate.title')" :bordered="false" size="small" segmented class="card-wrapper">
       <NDivider title-placement="left">{{ $t('page.function.tab.tabOperate.addTab') }}</NDivider>
       <NButton @click="routerPushByKey('about')">{{ $t('page.function.tab.tabOperate.addTabDesc') }}</NButton>
       <NDivider title-placement="left">{{ $t('page.function.tab.tabOperate.closeTab') }}</NDivider>
@@ -48,13 +42,7 @@ function resetTabLabel() {
         </NButton>
       </NSpace>
     </NCard>
-    <NCard
-      :title="$t('page.function.tab.tabTitle.title')"
-      :bordered="false"
-      size="small"
-      segmented
-      class="card-wrapper"
-    >
+    <NCard :title="$t('page.function.tab.tabTitle.title')" :bordered="false" size="small" segmented class="card-wrapper">
       <NDivider title-placement="left">{{ $t('page.function.tab.tabTitle.changeTitle') }}</NDivider>
       <NInputGroup class="max-w-240px">
         <NInput v-model:value="tabLabel" />

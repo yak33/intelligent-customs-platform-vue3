@@ -1,265 +1,218 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
 import type { Ref } from 'vue';
-import { NButton, NPopconfirm, NTag } from 'naive-ui';
+import { h, reactive, ref, shallowRef } from 'vue';
 import { useBoolean } from '@sa/hooks';
-import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
-import { useAppStore } from '@/store/modules/app';
-import { useTable, useTableOperate } from '@/hooks/common/table';
+import { NTag } from 'naive-ui';
 import { $t } from '@/locales';
-import { yesOrNoRecord } from '@/constants/common';
-import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
+import { fetchDeleteMenu, fetchGetAllPages, fetchGetMenuTree } from '@/service/api';
 import SvgIcon from '@/components/custom/svg-icon.vue';
-import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';
+import { transDeleteParams } from '@/utils/common';
+import { useAuth } from '@/hooks/business/auth';
+import { useDict } from '@/hooks/business/dict';
+import PermissionListTable from './modules/permission-list-table.vue';
+import MenuOperateDrawer, { type OperateType } from './modules/menu-operate-drawer.vue';
 
-const appStore = useAppStore();
+const { bool: detailVisible, setBool: setDetailVisible, setFalse: hideDetail } = useBoolean();
 
-const { bool: visible, setTrue: openModal } = useBoolean();
+const { bool: menuDrawerVisible, setTrue: openMenuDrawer } = useBoolean();
 
-const wrapperRef = ref<HTMLElement | null>(null);
+const { hasAuth } = useAuth();
 
-const { columns, columnChecks, data, loading, pagination, getData, getDataByPage } = useTable({
-  apiFn: fetchGetMenuList,
-  columns: () => [
-    {
-      type: 'selection',
-      align: 'center',
-      width: 48
-    },
-    {
-      key: 'id',
-      title: $t('page.manage.menu.id'),
-      align: 'center'
-    },
-    {
-      key: 'menuType',
-      title: $t('page.manage.menu.menuType'),
-      align: 'center',
-      width: 80,
-      render: row => {
-        const tagMap: Record<Api.SystemManage.MenuType, NaiveUI.ThemeColor> = {
-          1: 'default',
-          2: 'primary'
-        };
-
-        const label = $t(menuTypeRecord[row.menuType]);
-
-        return <NTag type={tagMap[row.menuType]}>{label}</NTag>;
-      }
-    },
-    {
-      key: 'menuName',
-      title: $t('page.manage.menu.menuName'),
-      align: 'center',
-      minWidth: 120,
-      render: row => {
-        const { i18nKey, menuName } = row;
-
-        const label = i18nKey ? $t(i18nKey) : menuName;
-
-        return <span>{label}</span>;
-      }
-    },
-    {
-      key: 'icon',
-      title: $t('page.manage.menu.icon'),
-      align: 'center',
-      width: 60,
-      render: row => {
-        const icon = row.iconType === '1' ? row.icon : undefined;
-
-        const localIcon = row.iconType === '2' ? row.icon : undefined;
-
-        return (
-          <div class="flex-center">
-            <SvgIcon icon={icon} localIcon={localIcon} class="text-icon" />
-          </div>
-        );
-      }
-    },
-    {
-      key: 'routeName',
-      title: $t('page.manage.menu.routeName'),
-      align: 'center',
-      minWidth: 120
-    },
-    {
-      key: 'routePath',
-      title: $t('page.manage.menu.routePath'),
-      align: 'center',
-      minWidth: 120
-    },
-    {
-      key: 'status',
-      title: $t('page.manage.menu.menuStatus'),
-      align: 'center',
-      width: 80,
-      render: row => {
-        if (row.status === null) {
-          return null;
-        }
-
-        const tagMap: Record<Api.Common.EnableStatus, NaiveUI.ThemeColor> = {
-          1: 'success',
-          2: 'warning'
-        };
-
-        const label = $t(enableStatusRecord[row.status]);
-
-        return <NTag type={tagMap[row.status]}>{label}</NTag>;
-      }
-    },
-    {
-      key: 'hideInMenu',
-      title: $t('page.manage.menu.hideInMenu'),
-      align: 'center',
-      width: 80,
-      render: row => {
-        const hide: CommonType.YesOrNo = row.hideInMenu ? 'Y' : 'N';
-
-        const tagMap: Record<CommonType.YesOrNo, NaiveUI.ThemeColor> = {
-          Y: 'error',
-          N: 'default'
-        };
-
-        const label = $t(yesOrNoRecord[hide]);
-
-        return <NTag type={tagMap[hide]}>{label}</NTag>;
-      }
-    },
-    {
-      key: 'parentId',
-      title: $t('page.manage.menu.parentId'),
-      width: 90,
-      align: 'center'
-    },
-    {
-      key: 'order',
-      title: $t('page.manage.menu.order'),
-      align: 'center',
-      width: 60
-    },
-    {
-      key: 'operate',
-      title: $t('common.operate'),
-      align: 'center',
-      width: 230,
-      render: row => (
-        <div class="flex-center justify-end gap-8px">
-          {row.menuType === '1' && (
-            <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row)}>
-              {$t('page.manage.menu.addChildMenu')}
-            </NButton>
-          )}
-          <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
-            {$t('common.edit')}
-          </NButton>
-          <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-            {{
-              default: () => $t('common.confirmDelete'),
-              trigger: () => (
-                <NButton type="error" ghost size="small">
-                  {$t('common.delete')}
-                </NButton>
-              )
-            }}
-          </NPopconfirm>
-        </div>
-      )
-    }
-  ]
-});
-
-const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, getData);
+const { dcitType, dictLabel } = useDict();
 
 const operateType = ref<OperateType>('add');
 
-function handleAdd() {
-  operateType.value = 'add';
-  openModal();
+type MenuTreeModel = Api.SystemManage.MenuTreeData;
+
+/** tree data */
+const tree = shallowRef<MenuTreeModel[]>([]);
+
+/** tree pattern name , use tree search */
+const name: Ref<string> = ref('');
+
+/** the select menu data */
+const showData: MenuTreeModel = reactive({
+  id: '0',
+  type: '1',
+  name: '',
+  routeName: '',
+  routePath: '',
+  icon: '',
+  iconType: '1',
+  status: '1',
+  hide: 'N',
+  iframeUrl: '',
+  sort: 0,
+  parentId: '0'
+});
+
+/** get tree data */
+async function getTree() {
+  const { error, data } = await fetchGetMenuTree();
+  if (!error) {
+    tree.value = data.map(recursive);
+  }
 }
 
-async function handleBatchDelete() {
-  // request
-  console.log(checkedRowKeys.value);
-
-  onBatchDeleted();
+/** recursive menu tree data, add prefix transform treeOption format */
+function recursive(item: Api.SystemManage.Menu): MenuTreeModel {
+  const result: MenuTreeModel = {
+    ...item,
+    label: $t(item.i18nKey as App.I18n.I18nKey),
+    prefix: () => {
+      const icon = item.iconType === '1' ? item.icon : undefined;
+      const localIcon = item.iconType === '2' ? item.icon : undefined;
+      return h(SvgIcon, {
+        icon,
+        localIcon,
+        class: 'text-icon'
+      });
+    }
+  };
+  if (item.children) {
+    result.children = item.children.map(recursive);
+  }
+  return result;
 }
 
-function handleDelete(id: number) {
-  // request
-  console.log(id);
-
-  onDeleted();
+/** tree select handle */
+function handleSelectKeys(node: NaiveUI.TreeOption | null, action: string) {
+  setDetailVisible(action === 'select');
+  if (detailVisible) {
+    Object.assign(showData, node);
+  }
 }
 
-/** the edit menu data or the parent menu data when adding a child menu */
-const editingData: Ref<Api.SystemManage.Menu | null> = ref(null);
-
-function handleEdit(item: Api.SystemManage.Menu) {
-  operateType.value = 'edit';
-  editingData.value = { ...item };
-
-  openModal();
-}
-
-function handleAddChildMenu(item: Api.SystemManage.Menu) {
-  operateType.value = 'addChild';
-
-  editingData.value = { ...item };
-
-  openModal();
-}
-
-const allPages = ref<string[]>([]);
+const allPages = shallowRef<string[]>([]);
 
 async function getAllPages() {
   const { data: pages } = await fetchGetAllPages();
   allPages.value = pages || [];
 }
 
-function init() {
+function handleAddMenu() {
+  operateType.value = 'add';
+  openMenuDrawer();
+}
+
+function handleAddChildMenu() {
+  operateType.value = 'addChild';
+  openMenuDrawer();
+}
+
+function handleEditMenu() {
+  operateType.value = 'edit';
+  openMenuDrawer();
+}
+
+async function handleDeleteMenu() {
+  // request
+  const { error, data: result } = await fetchDeleteMenu(transDeleteParams([showData.id]));
+  if (!error && result) {
+    window.$message?.success($t('common.deleteSuccess'));
+    init(null);
+    hideDetail();
+  }
+}
+
+function init(data: Api.SystemManage.MenuEdit | null) {
+  if (data) {
+    Object.assign(showData, data);
+  }
+  getTree();
   getAllPages();
 }
 
-// init
-init();
+init(null);
 </script>
 
 <template>
-  <div ref="wrapperRef" class="flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <NCard :title="$t('page.manage.menu.title')" :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
-      <template #header-extra>
-        <TableHeaderOperation
-          v-model:columns="columnChecks"
-          :disabled-delete="checkedRowKeys.length === 0"
-          :loading="loading"
-          @add="handleAdd"
-          @delete="handleBatchDelete"
-          @refresh="getData"
-        />
-      </template>
-      <NDataTable
-        v-model:checked-row-keys="checkedRowKeys"
-        :columns="columns"
-        :data="data"
-        size="small"
-        :flex-height="!appStore.isMobile"
-        :scroll-x="1088"
-        :loading="loading"
-        :row-key="row => row.id"
-        remote
-        :pagination="pagination"
-        class="sm:h-full"
-      />
-      <MenuOperateModal
-        v-model:visible="visible"
-        :operate-type="operateType"
-        :row-data="editingData"
-        :all-pages="allPages"
-        @submitted="getDataByPage"
-      />
-    </NCard>
+  <div class="flex overflow-hidden">
+    <NGrid :x-gap="8" :y-gap="8" item-responsive responsive="screen" cols="1 s:1 m:5 l:5 xl:5 2xl:5" class="h-full-hidden">
+      <NGridItem span="1" class="h-full-hidden">
+        <NCard :title="$t('page.manage.menu.title')" :bordered="false" size="small" class="h-full sm:flex-1-hidden" content-class="h-full-hidden">
+          <template #header-extra>
+            <NFlex>
+              <NButton v-if="hasAuth('sys:menu:add')" ghost type="primary" size="small" @click="handleAddMenu()">
+                {{ $t('common.add') }}
+              </NButton>
+              <NButton quaternary @click="init(null)">
+                <template #icon>
+                  <SvgIcon icon="ic:round-refresh" />
+                </template>
+              </NButton>
+            </NFlex>
+          </template>
+          <NInput v-model:value="name" :placeholder="$t('page.manage.menu.form.name')" clearable />
+          <NTree
+            :data="tree"
+            :pattern="name"
+            accordion
+            block-line
+            class="p-tree my-3 flex-col-stretch"
+            key-field="id"
+            virtual-scroll
+            :show-irrelevant-nodes="false"
+            @update-selected-keys="(_key, _option, { node, action }) => handleSelectKeys(node, action)"
+          />
+        </NCard>
+      </NGridItem>
+      <NGridItem v-if="detailVisible" span="4" class="flex flex-col">
+        <NCard :title="$t('page.manage.menu.detail')" :bordered="false" size="small" class="mb-2">
+          <template #header-extra>
+            <NFlex>
+              <NButton v-if="showData.type === '1' && hasAuth('sys:menu:add')" type="primary" quaternary size="small" @click="handleAddChildMenu()">
+                {{ $t('page.manage.menu.addChildMenu') }}
+              </NButton>
+              <NButton v-if="hasAuth('sys:menu:update')" ghost type="primary" size="small" @click="handleEditMenu()">
+                {{ $t('common.edit') }}
+              </NButton>
+              <NPopconfirm v-if="hasAuth('sys:menu:delete')" placement="bottom" @positive-click="handleDeleteMenu">
+                <template #trigger>
+                  <NButton ghost type="error" size="small">
+                    {{ $t('common.delete') }}
+                  </NButton>
+                </template>
+                {{ $t('common.confirmDelete') }}
+              </NPopconfirm>
+            </NFlex>
+          </template>
+          <NDescriptions label-placement="left" size="small" bordered :column="2">
+            <NDescriptionsItem :label="$t('page.manage.menu.type')">
+              <NTag :type="dcitType('menu_type', showData.type)">{{ dictLabel('menu_type', showData.type) }}</NTag>
+            </NDescriptionsItem>
+            <NDescriptionsItem :label="$t('page.manage.menu.status')">
+              <NTag :type="dcitType('status', showData.status)">{{ dictLabel('status', showData.status) }}</NTag>
+            </NDescriptionsItem>
+            <NDescriptionsItem :label="$t('page.manage.menu.name')">{{ showData.name }}</NDescriptionsItem>
+            <NDescriptionsItem :label="$t('page.manage.menu.i18nKey')">{{ showData.i18nKey }}</NDescriptionsItem>
+            <NDescriptionsItem :label="$t('page.manage.menu.routeName')">{{ showData.routeName }}</NDescriptionsItem>
+            <NDescriptionsItem :label="$t('page.manage.menu.routePath')">{{ showData.routePath }}</NDescriptionsItem>
+            <NDescriptionsItem :label="$t('page.manage.menu.hideInMenu')">
+              <NTag :type="dcitType('feature_status', showData.hide)">{{ dictLabel('feature_status', showData.hide) }}</NTag>
+            </NDescriptionsItem>
+            <NDescriptionsItem :label="$t('page.manage.menu.keepAlive')">
+              <NTag :type="dcitType('feature_status', showData.keepAlive || 'N')">{{ dictLabel('feature_status', showData.keepAlive || 'N') }}</NTag>
+            </NDescriptionsItem>
+            <NDescriptionsItem :label="$t('page.manage.menu.href')" :span="2">{{ showData.href }}</NDescriptionsItem>
+            <NDescriptionsItem :label="$t('page.manage.menu.iframeUrl')" :span="2">{{ showData.iframeUrl }}</NDescriptionsItem>
+          </NDescriptions>
+        </NCard>
+        <PermissionListTable :show-data="showData" :all-pages="allPages" />
+      </NGridItem>
+      <NGridItem v-else span="4">
+        <NCard :bordered="false" size="small" class="h-full">
+          <NEmpty :description="$t('page.manage.menu.selectTreeIsEmptyTip')" class="h-full justify-center" />
+        </NCard>
+      </NGridItem>
+    </NGrid>
+    <MenuOperateDrawer
+      v-model:visible="menuDrawerVisible"
+      :row-data="showData"
+      :operate-type="operateType"
+      :all-pages="allPages"
+      @submitted="data => init(data)"
+    />
   </div>
 </template>
 

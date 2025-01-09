@@ -1,15 +1,9 @@
-import type {
-  LocationQueryRaw,
-  NavigationGuardNext,
-  RouteLocationNormalized,
-  RouteLocationRaw,
-  Router
-} from 'vue-router';
+import type { LocationQueryRaw, NavigationGuardNext, RouteLocationNormalized, RouteLocationRaw, Router } from 'vue-router';
 import type { RouteKey, RoutePath } from '@elegant-router/types';
 import { getRouteName } from '@/router/elegant/transform';
-import { useAuthStore } from '@/store/modules/auth';
 import { useRouteStore } from '@/store/modules/route';
 import { localStg } from '@/utils/storage';
+import { useDictStore } from '@/store/modules/dict';
 
 /**
  * create route guard
@@ -17,7 +11,7 @@ import { localStg } from '@/utils/storage';
  * @param router router instance
  */
 export function createRouteGuard(router: Router) {
-  router.beforeEach(async (to, from, next) => {
+  router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
     const location = await initRoute(to);
 
     if (location) {
@@ -25,18 +19,19 @@ export function createRouteGuard(router: Router) {
       return;
     }
 
-    const authStore = useAuthStore();
+    // const authStore = useAuthStore();
 
     const rootRoute: RouteKey = 'root';
     const loginRoute: RouteKey = 'login';
-    const noAuthorizationRoute: RouteKey = '403';
+    // const noAuthorizationRoute: RouteKey = '403';
 
     const isLogin = Boolean(localStg.get('token'));
     const needLogin = !to.meta.constant;
-    const routeRoles = to.meta.roles || [];
+    // const routeRoles = to.meta.roles || [];
 
-    const hasRole = authStore.userInfo.roles.some(role => routeRoles.includes(role));
-    const hasAuth = authStore.isStaticSuper || !routeRoles.length || hasRole;
+    // const hasRole = authStore.userInfo.roles.some(role => routeRoles.includes(role));
+
+    // const hasAuth = authStore.isStaticSuper || !routeRoles.length || hasRole;
 
     // if it is login route when logged in, then switch to the root page
     if (to.name === loginRoute && isLogin) {
@@ -57,10 +52,10 @@ export function createRouteGuard(router: Router) {
     }
 
     // if the user is logged in but does not have authorization, then switch to the 403 page
-    if (!hasAuth) {
-      next({ name: noAuthorizationRoute });
-      return;
-    }
+    // if (!hasAuth) {
+    //   next({ name: noAuthorizationRoute });
+    //   return;
+    // }
 
     // switch route normally
     handleRouteSwitch(to, from, next);
@@ -74,6 +69,7 @@ export function createRouteGuard(router: Router) {
  */
 async function initRoute(to: RouteLocationNormalized): Promise<RouteLocationRaw | null> {
   const routeStore = useRouteStore();
+  const dictStore = useDictStore();
 
   const notFoundRoute: RouteKey = 'not-found';
   const isNotFoundRoute = to.name === notFoundRoute;
@@ -121,6 +117,9 @@ async function initRoute(to: RouteLocationNormalized): Promise<RouteLocationRaw 
     // initialize the auth route
     await routeStore.initAuthRoute();
 
+    // initialize the dict item
+    await dictStore.init();
+
     // the route is captured by the "not-found" route because the auth route is not initialized
     // after the auth route is initialized, redirect to the original route
     if (isNotFoundRoute) {
@@ -138,7 +137,7 @@ async function initRoute(to: RouteLocationNormalized): Promise<RouteLocationRaw 
     }
   }
 
-  routeStore.onRouteSwitchWhenLoggedIn();
+  // routeStore.onRouteSwitchWhenLoggedIn();
 
   // the auth route is initialized
   // it is not the "not-found" route, then it is allowed to access

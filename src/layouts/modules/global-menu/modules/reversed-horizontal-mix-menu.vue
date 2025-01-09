@@ -19,13 +19,8 @@ const appStore = useAppStore();
 const themeStore = useThemeStore();
 const routeStore = useRouteStore();
 const { routerPushByKeyWithMetaQuery } = useRouterPush();
-const {
-  firstLevelMenus,
-  childLevelMenus,
-  activeFirstLevelMenuKey,
-  setActiveFirstLevelMenuKey,
-  isActiveFirstLevelMenuHasChildren
-} = useMixMenuContext();
+const { firstLevelMenus, childLevelMenus, activeFirstLevelMenuKey, setActiveFirstLevelMenuKey, isActiveFirstLevelMenuHasChildren } =
+  useMixMenuContext();
 const { selectedKey } = useMenu();
 
 function handleSelectMixMenu(key: RouteKey) {

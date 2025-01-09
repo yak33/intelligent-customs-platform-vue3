@@ -15,9 +15,7 @@ export const createAlovaRequest = <
   L1Cache extends AlovaGlobalCacheAdapter = AlovaDefaultCacheAdapter,
   L2Cache extends AlovaGlobalCacheAdapter = AlovaDefaultCacheAdapter
 >(
-  customConfig: CustomAlovaConfig<
-    AlovaGenerics<any, any, RequestConfig, ResponseType, ResponseHeader, L1Cache, L2Cache, any>
-  >,
+  customConfig: CustomAlovaConfig<AlovaGenerics<any, any, RequestConfig, ResponseType, ResponseHeader, L1Cache, L2Cache, any>>,
   options: RequestOptions<AlovaGenerics<any, any, RequestConfig, ResponseType, ResponseHeader, L1Cache, L2Cache, any>>
 ) => {
   const { tokenRefresher } = options;
